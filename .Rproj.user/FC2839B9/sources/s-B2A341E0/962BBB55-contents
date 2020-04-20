@@ -1,0 +1,56 @@
+---
+title: "The Emotional Body and Time Perception Replication Analysis"
+output: html_notebook
+---
+
+### Libraries
+
+```{r message=FALSE, warning=FALSE}
+library(readr)
+library(dplyr)
+library(ggplot2)
+library(grepl)
+```
+
+### Load the data
+```{r}
+prolific.data <- read_csv('data/prolific_data_timeperception.csv')
+```
+
+### Clean Up Data For Analysis
+```{r}
+data.testing <- prolific.data %>%
+  filter(test_phase == "testing") %>%
+  select(-row, -stimulus, -key_press, -trial_type, -trial_index, -time_elapsed, -stimulus_choice, -test_phase, -responses) %>%
+  mutate(rt = as.numeric(rt))
+
+data.testing
+```
+
+### Histogram of Response Times
+
+```{r}
+data.histogram <-
+  ggplot(data = data.testing, aes(x=rt)) +
+  geom_histogram(bins=100)
+         
+data.histogram
+```
+
+### Remove Responses With RT Outliers
+
+```{r}
+data.cleaned <- data.testing %>%
+  filter(rt < 25000)
+
+data.cleaned
+```
+
+### Add Column For Condition Type
+```{r}
+data.category <- data.cleaned %>%
+  mutate(condition = if_else(grepl("blob", stim_name, fixed=TRUE), "blob", "orig")) %>%
+  select(-stim_name)
+
+data.category
+```

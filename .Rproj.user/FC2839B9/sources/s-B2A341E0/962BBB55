@@ -1,0 +1,27 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1587409747057.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "2219958649",
+    "id" : "962BBB55",
+    "lastKnownWriteTime" : 1587414295,
+    "last_content_update" : 1587414295790,
+    "path" : "C:/Users/wcols/Local/Vassar/COGS 219/droit-voilet-replication-analysis/droit-voilet-replication-analysis.Rmd",
+    "project_path" : "droit-voilet-replication-analysis.Rmd",
+    "properties" : {
+        "chunk_output_type" : "inline",
+        "cursorPosition" : "55,3",
+        "scrollLine" : "38",
+        "tempName" : "Untitled1"
+    },
+    "read_only" : false,
+    "read_only_alternatives" : [
+    ],
+    "relative_order" : 1,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_markdown"
+}
