@@ -1,0 +1,8 @@
+"0","data.category <- data.cleaned %>%"
+"0","  mutate(condition = if_else(grepl(""blob"", stim_name, fixed=TRUE), ""blob"", ""orig"")) %>%"
+"0","  select(-stim_name)"
+"0",""
+"0","write.xlsx(data.category, ""text.xlsx"", sheetName = ""Sheet1"", col.names = TRUE, row.names = TRUE, append = FALSE)"
+"2","Error in write.xlsx(data.category, ""text.xlsx"", sheetName = ""Sheet1"",  : 
+  could not find function ""write.xlsx""
+"

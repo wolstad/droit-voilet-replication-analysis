@@ -9,7 +9,7 @@ output: html_notebook
 library(readr)
 library(dplyr)
 library(ggplot2)
-library(grepl)
+library(grep1)
 ```
 
 ### Load the data
