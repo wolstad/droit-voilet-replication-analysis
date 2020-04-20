@@ -9,7 +9,6 @@ output: html_notebook
 library(readr)
 library(dplyr)
 library(ggplot2)
-library(grep1)
 ```
 
 ### Load the data
@@ -52,5 +51,6 @@ data.category <- data.cleaned %>%
   mutate(condition = if_else(grepl("blob", stim_name, fixed=TRUE), "blob", "orig")) %>%
   select(-stim_name)
 
+write.csv(data.category,'data/data_category.csv')
 data.category
 ```
