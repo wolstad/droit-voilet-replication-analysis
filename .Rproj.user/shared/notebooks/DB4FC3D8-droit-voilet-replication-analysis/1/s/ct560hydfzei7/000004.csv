@@ -1,6 +1,0 @@
-"0","data.testing <- prolific.data %>%"
-"0","  filter(test_phase == ""testing"") %>%"
-"0","  select(-row, -stimulus, -key_press, -trial_type, -trial_index, -time_elapsed, -stimulus_choice, -test_phase, -responses) %>%"
-"0","  mutate(rt = as.numeric(rt))"
-"0",""
-"0","data.testing"

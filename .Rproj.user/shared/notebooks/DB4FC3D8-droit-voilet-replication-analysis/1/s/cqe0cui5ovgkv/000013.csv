@@ -1,5 +1,0 @@
-"0","data.histogram <-"
-"0","  ggplot(data = data.testing, aes(x=rt)) +"
-"0","  geom_histogram(bins=100)"
-"0","         "
-"0","data.histogram"
