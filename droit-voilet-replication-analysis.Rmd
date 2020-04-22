@@ -21,7 +21,7 @@ prolific.data <- read_csv('data/prolific_data_timeperception.csv')
 data.testing <- prolific.data %>%
   filter(test_phase == "testing") %>%
   select(-row, -stimulus, -key_press, -trial_type, -trial_index, -time_elapsed, -stimulus_choice, -test_phase, -responses) %>%
-  mutate(rt = as.numeric(rt))
+  mutate(rt = as.numeric(rt), img_duration = as.numeric(img_duration))
 
 data.testing
 ```
@@ -49,8 +49,91 @@ data.cleaned
 ```{r}
 data.category <- data.cleaned %>%
   mutate(condition = if_else(grepl("blob", stim_name, fixed=TRUE), "blob", "orig")) %>%
+  mutate(emotion = if_else(grepl("FE", stim_name, fixed=TRUE), "fear", "sad")) %>%
+  mutate(correct = if_else(((img_duration > 1000) & (responded == "short")) | ((img_duration < 1000) & (responded == "long")), FALSE, TRUE)) %>%
   select(-stim_name)
 
 write.csv(data.category,'data/data_category.csv')
 data.category
 ```
+
+### Probability of Long Response For Each Img Duration
+```{r}
+data.prob.indiv <- data.category %>%
+  group_by(subject_id, condition, emotion, img_duration) %>%
+  summarize(p.long = sum(responded == "long") / n())
+
+data.prob
+```
+
+```{r}
+data.prob <- data.prob.indiv %>%
+  group_by(condition, emotion, img_duration) %>%
+  summarize(p.long.mean = mean(p.long), sd=sd(p.long), se=sd/sqrt(n()))
+
+data.prob
+```
+
+### Figure 1
+```{r}
+ggplot(data=data.prob, aes(x=img_duration, y=p.long.mean, fill=emotion)) +
+  geom_col(position="dodge") +
+  #geom_errorbar(aes(ymin=p.long.mean-se, ymax=p.long.mean+se), position=position_dodge(.2)) +
+  facet_wrap(~condition)
+```
+
+
+### Probability of Long Response When Incorrect
+```{r}
+data.prob.wrong.indiv <- data.category %>%
+  filter(correct == FALSE) %>%
+  group_by(subject_id, condition, emotion) %>%
+  summarize(p.long.wrong = sum(responded == "long") / n())
+
+data.prob.wrong.indiv
+```
+
+```{r}
+data.prob.wrong <- data.prob.wrong.indiv %>%
+  group_by(condition, emotion) %>%
+  summarize(p.long.wrong.mean = mean(p.long.wrong), sd=sd(p.long.wrong), se=sd/sqrt(n()))
+
+data.prob.wrong
+```
+
+### Figure 2
+```{r}
+ggplot(data=data.prob.wrong, aes(x=condition, y=p.long.wrong.mean, fill=emotion)) +
+  geom_col(position="dodge") +
+  geom_errorbar(aes(ymin=p.long.wrong.mean-se, ymax=p.long.wrong.mean+se), width=.2, position=position_dodge(.9))
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
