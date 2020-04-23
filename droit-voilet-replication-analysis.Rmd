@@ -9,6 +9,7 @@ output: html_notebook
 library(readr)
 library(dplyr)
 library(ggplot2)
+library(ez)
 ```
 
 ### Load the data
@@ -50,7 +51,7 @@ data.cleaned
 data.category <- data.cleaned %>%
   mutate(condition = if_else(grepl("blob", stim_name, fixed=TRUE), "blob", "orig")) %>%
   mutate(emotion = if_else(grepl("FE", stim_name, fixed=TRUE), "fear", "sad")) %>%
-  mutate(correct = if_else(((img_duration > 1000) & (responded == "short")) | ((img_duration < 1000) & (responded == "long")), FALSE, TRUE)) %>%
+  mutate(correct = if_else(((img_duration >= 1000) & (responded == "short")) | ((img_duration < 1000) & (responded == "long")), FALSE, TRUE)) %>%
   select(-stim_name)
 
 write.csv(data.category,'data/data_category.csv')
@@ -76,12 +77,21 @@ data.prob
 
 ### Figure 1
 ```{r}
-ggplot(data=data.prob, aes(x=img_duration, y=p.long.mean, fill=emotion)) +
-  geom_col(position="dodge") +
+ggplot(data=data.prob, aes(x=img_duration, y=p.long.mean, color=emotion, group=emotion)) +
+  geom_line() +
+  geom_point() +
   #geom_errorbar(aes(ymin=p.long.mean-se, ymax=p.long.mean+se), position=position_dodge(.2)) +
   facet_wrap(~condition)
 ```
 
+### Filter Out Missing
+```{r}
+data.prob.wrong.anova <- data.prob.wrong.indiv %>%
+  group_by(subject_id) %>%
+  summarize(n = n()) %>%
+  filter(n == 2) %>%
+  pull(subject_id)
+```
 
 ### Probability of Long Response When Incorrect
 ```{r}
@@ -95,6 +105,7 @@ data.prob.wrong.indiv
 
 ```{r}
 data.prob.wrong <- data.prob.wrong.indiv %>%
+  filter(subject_id %in% data.prob.wrong.anova) %>%
   group_by(condition, emotion) %>%
   summarize(p.long.wrong.mean = mean(p.long.wrong), sd=sd(p.long.wrong), se=sd/sqrt(n()))
 
@@ -108,9 +119,10 @@ ggplot(data=data.prob.wrong, aes(x=condition, y=p.long.wrong.mean, fill=emotion)
   geom_errorbar(aes(ymin=p.long.wrong.mean-se, ymax=p.long.wrong.mean+se), width=.2, position=position_dodge(.9))
 ```
 
-
-
-
+### Analysis of Figure 2
+```{r}
+ezANOVA(data.prob.wrong.indiv %>% filter(subject_id %in% data.prob.wrong.anova), wid=subject_id, between = condition, within=emotion, dv= p.long.wrong)
+```
 
 
 
