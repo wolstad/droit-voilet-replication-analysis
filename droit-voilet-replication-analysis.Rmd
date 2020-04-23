@@ -84,35 +84,25 @@ ggplot(data=data.prob, aes(x=img_duration, y=p.long.mean, color=emotion, group=e
   facet_wrap(~condition)
 ```
 
-### Filter Out Missing
-```{r}
-data.prob.wrong.anova <- data.prob.wrong.indiv %>%
-  group_by(subject_id) %>%
-  summarize(n = n()) %>%
-  filter(n == 2) %>%
-  pull(subject_id)
-```
-
 ### Probability of Long Response When Incorrect
 ```{r}
 data.prob.wrong.indiv <- data.category %>%
-  filter(correct == FALSE) %>%
   group_by(subject_id, condition, emotion) %>%
-  summarize(p.long.wrong = sum(responded == "long") / n())
+  summarize(p.long.wrong = sum(responded == "long" && correct == FALSE) / n(), p.short.wrong = sum(responded == "short" && correct == FALSE) / n())
 
 data.prob.wrong.indiv
 ```
 
+### Probability of Long Response When Incorrect
 ```{r}
 data.prob.wrong <- data.prob.wrong.indiv %>%
-  filter(subject_id %in% data.prob.wrong.anova) %>%
   group_by(condition, emotion) %>%
-  summarize(p.long.wrong.mean = mean(p.long.wrong), sd=sd(p.long.wrong), se=sd/sqrt(n()))
+  summarize(p.long.wrong.mean = mean(p.long.wrong), sd.long =sd(p.long.wrong), se.long=sd.long/sqrt(n()), p.short.wrong.mean = mean(p.short.wrong), sd.short =sd(p.short.wrong), se.short=sd.short/sqrt(n()))
 
 data.prob.wrong
 ```
 
-### Figure 2
+### Figure 2 
 ```{r}
 ggplot(data=data.prob.wrong, aes(x=condition, y=p.long.wrong.mean, fill=emotion)) +
   geom_col(position="dodge") +
@@ -121,7 +111,7 @@ ggplot(data=data.prob.wrong, aes(x=condition, y=p.long.wrong.mean, fill=emotion)
 
 ### Analysis of Figure 2
 ```{r}
-ezANOVA(data.prob.wrong.indiv %>% filter(subject_id %in% data.prob.wrong.anova), wid=subject_id, between = condition, within=emotion, dv= p.long.wrong)
+ezANOVA(data.prob.wrong.indiv, wid=subject_id, between = condition, within=emotion, dv= p.long.wrong)
 ```
 
 
