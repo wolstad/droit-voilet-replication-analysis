@@ -86,32 +86,40 @@ ggplot(data=data.prob, aes(x=img_duration, y=p.long.mean, color=emotion, group=e
 
 ### Probability of Long Response When Incorrect
 ```{r}
-data.prob.wrong.indiv <- data.category %>%
-  group_by(subject_id, condition, emotion) %>%
-  summarize(p.long.wrong = sum(responded == "long" && correct == FALSE) / n(), p.short.wrong = sum(responded == "short" && correct == FALSE) / n())
+data.prob.wrong.indiv.prep <- data.category %>%
+  group_by(subject_id, condition, emotion, responded) %>%
+  summarize(p.wrong = sum(correct == FALSE) / n())
 
-data.prob.wrong.indiv
+bad.subjects <- data.prob.wrong.indiv.prep %>%
+  group_by(subject_id) %>%
+  summarize(n=n()) %>%
+  filter (n != 4) %>%
+  pull(subject_id)
+
+data.prob.wrong.indiv <- data.prob.wrong.indiv.prep %>%
+  filter(!subject_id %in% bad.subjects)
 ```
 
 ### Probability of Long Response When Incorrect
 ```{r}
 data.prob.wrong <- data.prob.wrong.indiv %>%
-  group_by(condition, emotion) %>%
-  summarize(p.long.wrong.mean = mean(p.long.wrong), sd.long =sd(p.long.wrong), se.long=sd.long/sqrt(n()), p.short.wrong.mean = mean(p.short.wrong), sd.short =sd(p.short.wrong), se.short=sd.short/sqrt(n()))
+  group_by(condition, emotion, responded) %>%
+  summarize(p.wrong.mean = mean(p.wrong), sd =sd(p.wrong), se =sd/sqrt(n()))
 
 data.prob.wrong
 ```
 
 ### Figure 2 
 ```{r}
-ggplot(data=data.prob.wrong, aes(x=condition, y=p.long.wrong.mean, fill=emotion)) +
+ggplot(data=data.prob.wrong, aes(x=condition, y=p.wrong.mean, fill=emotion)) +
   geom_col(position="dodge") +
-  geom_errorbar(aes(ymin=p.long.wrong.mean-se, ymax=p.long.wrong.mean+se), width=.2, position=position_dodge(.9))
+  facet_wrap(~responded) +
+  geom_errorbar(aes(ymin=p.wrong.mean-se, ymax=p.wrong.mean+se), width=.2, position=position_dodge(.9))
 ```
 
 ### Analysis of Figure 2
 ```{r}
-ezANOVA(data.prob.wrong.indiv, wid=subject_id, between = condition, within=emotion, dv= p.long.wrong)
+ezANOVA(data.prob.wrong.indiv, wid=subject_id, between = condition, within=c(emotion, responded), dv= p.wrong)
 ```
 
 
