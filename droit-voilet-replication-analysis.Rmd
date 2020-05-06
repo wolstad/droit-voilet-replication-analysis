@@ -32,9 +32,10 @@ data.testing
 ```{r}
 data.histogram <-
   ggplot(data = data.testing, aes(x=rt)) +
-  geom_histogram(bins=100)
+  geom_histogram(bins=100) +
+  geom_vline(xintercept=25000, linetype="dashed")
          
-data.histogram
+data.histogram + labs(x="Response Time (ms)", y="Trial Count")
 ```
 
 ### Remove Responses With RT Outliers
@@ -80,8 +81,9 @@ data.prob
 ggplot(data=data.prob, aes(x=img_duration, y=p.long.mean, color=emotion, group=emotion)) +
   geom_line() +
   geom_point() +
-  #geom_errorbar(aes(ymin=p.long.mean-se, ymax=p.long.mean+se), position=position_dodge(.2)) +
-  facet_wrap(~condition)
+  geom_hline(yintercept=.5, linetype="dashed") +
+  labs(x="Image Duration (ms)", y="Probability of Long Response", color="Emotional Condition") +
+  facet_wrap(~condition, labeller = labeller(condition=c(blob = "Asalient Images", orig = "Original Stimuli")))
 ```
 
 ### Probability of Long Response When Incorrect
@@ -113,6 +115,8 @@ data.prob.wrong
 ```{r}
 ggplot(data=data.prob.wrong, aes(x=condition, y=p.wrong.mean, fill=emotion)) +
   geom_col(position="dodge") +
+  scale_x_discrete(labels = c("Asalient", "Original"))gith +
+  labs(x="Stimulus Condition", y="Mean Probability of Long Response", fill="Emotional Condition") +
   facet_wrap(~responded) +
   geom_errorbar(aes(ymin=p.wrong.mean-se, ymax=p.wrong.mean+se), width=.2, position=position_dodge(.9))
 ```
