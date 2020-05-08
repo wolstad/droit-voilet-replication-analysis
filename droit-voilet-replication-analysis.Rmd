@@ -65,7 +65,7 @@ data.prob.indiv <- data.category %>%
   group_by(subject_id, condition, emotion, img_duration) %>%
   summarize(p.long = sum(responded == "long") / n())
 
-data.prob
+data.prob.indiv
 ```
 
 ```{r}
@@ -115,8 +115,8 @@ data.prob.wrong
 ```{r}
 ggplot(data=data.prob.wrong, aes(x=condition, y=p.wrong.mean, fill=emotion)) +
   geom_col(position="dodge") +
-  scale_x_discrete(labels = c("Asalient", "Original"))gith +
-  labs(x="Stimulus Condition", y="Mean Probability of Long Response", fill="Emotional Condition") +
+  scale_x_discrete(labels = c("Asalient", "Original")) +
+  labs(x="Stimulus Condition", y="Mean Probability of Long Response When Incorrect", fill="Emotional Condition") +
   facet_wrap(~responded) +
   geom_errorbar(aes(ymin=p.wrong.mean-se, ymax=p.wrong.mean+se), width=.2, position=position_dodge(.9))
 ```
