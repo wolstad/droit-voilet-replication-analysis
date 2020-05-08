@@ -116,7 +116,7 @@ data.prob.wrong
 ggplot(data=data.prob.wrong, aes(x=condition, y=p.wrong.mean, fill=emotion)) +
   geom_col(position="dodge") +
   scale_x_discrete(labels = c("Asalient", "Original")) +
-  labs(x="Stimulus Condition", y="Mean Probability of Long Response When Incorrect", fill="Emotional Condition") +
+  labs(x="Stimulus Condition", y="Mean Probability of Incorrect Response", fill="Emotional Condition") +
   facet_wrap(~responded) +
   geom_errorbar(aes(ymin=p.wrong.mean-se, ymax=p.wrong.mean+se), width=.2, position=position_dodge(.9))
 ```
